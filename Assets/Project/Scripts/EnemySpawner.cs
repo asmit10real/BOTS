@@ -5,16 +5,16 @@ using System.Collections.Generic;
 public class EnemySpawner : NetworkBehaviour {
     public List<Transform> spawnPoints;
     public List<NetworkPrefabRef> enemyPrefabs;
-    private bool shouldSpawn = false; // ✅ Controls when enemies should be spawned
+    private bool shouldSpawn = false;
 
     public void ActivateSpawner() {
-        shouldSpawn = true; // ✅ Only allows spawning when triggered by SectorManager
+        shouldSpawn = true;
     }
 
     public override void FixedUpdateNetwork() {
         if (!Object.HasStateAuthority || !shouldSpawn) return;
 
-        shouldSpawn = false; // ✅ Prevents multiple spawns
+        shouldSpawn = false;
         SpawnEnemies();
     }
 
@@ -30,7 +30,9 @@ public class EnemySpawner : NetworkBehaviour {
 
             Debug.Log($"[EnemySpawner] Attempting to spawn enemy {i} at {spawnPosition}");
 
+            // ✅ Fusion will now sync position automatically via NetworkTransform
             NetworkObject enemy = Runner.Spawn(enemyPrefabs[i], spawnPosition, spawnRotation);
+
             Debug.Log($"[EnemySpawner] Spawned enemy {i} at {spawnPosition}, Network ID: {enemy.Id}");
         }
     }
