@@ -2,29 +2,33 @@ using UnityEngine;
 using Fusion;
 
 public class EnemyHealth : NetworkBehaviour {
-    [Networked] public int Health { get; set; } = 100;
+    public int maxHealth = 100;
+    [Networked] private int currentHealth { get; set; }
+    private EnemySpawner spawner;
 
-    public KeyEnemyTracker keyEnemyTracker; // If the enemy is a key enemy
+    public override void Spawned() {
+        currentHealth = maxHealth;
+    }
+
+    public void AssignSpawner(EnemySpawner enemySpawner) {
+        spawner = enemySpawner;
+        Debug.Log($"[EnemyHealth] Assigned {Object.Id} to spawner {spawner.gameObject.name}");
+    }
 
     public void TakeDamage(int damage) {
-        if (!Object.HasStateAuthority) return; // Only the host applies damage
+        if (!Object.HasStateAuthority) return;
 
-        Health -= damage;
-        if (Health <= 0) {
+        currentHealth -= damage;
+        if (currentHealth <= 0) {
             Die();
         }
     }
 
     private void Die() {
-        if (keyEnemyTracker != null) {
-            keyEnemyTracker.NotifyDeath(); // Inform the gate if this is a key enemy
-        }
-        Runner.Despawn(Object); // Remove from the game
-    }
-
-    void Update() {
-        if (HasStateAuthority && Input.GetKeyDown(KeyCode.K)) { // Press 'K' to kill all enemies on the server
-            TakeDamage(9999);
-        }
+        Debug.Log($"[EnemyHealth] Enemy {Object.Id} has died.");
+        spawner?.NotifyEnemyDeath(Object); // ✅ Notify the correct spawner
+        Runner.Despawn(Object);
     }
 }
+
+

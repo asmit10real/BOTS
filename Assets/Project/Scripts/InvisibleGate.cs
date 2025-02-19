@@ -4,6 +4,7 @@ using Fusion;
 public class InvisibleGate : NetworkBehaviour {
     public Collider gateCollider; // Regular BoxCollider (Not Trigger)
     public SectorManager sectorManager;
+    public EnemySpawner nextSectionSpawner;
 
     private int enemiesKilled = 0;
     public int requiredEnemiesToKill;
@@ -19,12 +20,19 @@ public class InvisibleGate : NetworkBehaviour {
     }
 
     public void OpenGate() {
-        if (isOpen) return; // Double-check to prevent repeated calls
+        Debug.Log($"[InvisibleGate] Opening gate...");
 
-        isOpen = true; // Mark as opened
         if (gateCollider != null) {
-            gateCollider.enabled = false; // Disable collider to allow movement
+            gateCollider.enabled = false;
+            Debug.Log($"[InvisibleGate] Gate collider disabled.");
+
+            // ✅ Activate the next wave of enemies
+            if (nextSectionSpawner != null) {
+                Debug.Log($"[InvisibleGate] Activating next enemy spawner...");
+                nextSectionSpawner.ActivateSpawner();
+            }
+        } else {
+            Debug.LogError($"[InvisibleGate] Gate collider reference is missing!");
         }
-        sectorManager.OpenNextArea(); // Tell the SectorManager to spawn new enemies
     }
 }
