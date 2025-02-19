@@ -115,8 +115,8 @@ public class EnemyAI : NetworkBehaviour {
         Vector3 move = direction * moveSpeed * Runner.DeltaTime;
 
         // ✅ Prevent enemies from fully overlapping by adding randomness to movement
-        move.x += Random.Range(-0.05f, 0.05f);
-        move.z += Random.Range(-0.05f, 0.05f);
+        //move.x += Random.Range(-0.05f, 0.05f);
+        //move.z += Random.Range(-0.05f, 0.05f);
 
         transform.LookAt(new Vector3(target.position.x, transform.position.y, target.position.z));
         controller.Move(move);

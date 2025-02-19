@@ -170,7 +170,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f3fb7140fa7a844d8a18041c3bd7bd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 1
+  moveSpeed: 3
   attackRange: 1.5
   detectionRadius: 5
   target: {fileID: 0}
@@ -199,8 +199,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7675c0382eab46f41869aabc108c2ca2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Health: 1
-  keyEnemyTracker: {fileID: -2028186457266727638}
+  maxHealth: 100
 --- !u!136 &-5607548486960471172
 CapsuleCollider:
   m_ObjectHideFlags: 0

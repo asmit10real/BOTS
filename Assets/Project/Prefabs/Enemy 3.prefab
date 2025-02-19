@@ -74,7 +74,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d1686a547f720d74c9cb5304ef3e946b, type: 2}
+  - {fileID: 2100000, guid: 53b6b9c747be920408d3ce8ad9da755c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -199,8 +199,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7675c0382eab46f41869aabc108c2ca2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Health: 1
-  keyEnemyTracker: {fileID: -2028186457266727638}
+  maxHealth: 100
 --- !u!136 &-5607548486960471172
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -236,7 +235,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f3fb7140fa7a844d8a18041c3bd7bd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 1
+  moveSpeed: 5
   attackRange: 1.5
   detectionRadius: 10
   target: {fileID: 0}
