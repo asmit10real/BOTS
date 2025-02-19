@@ -200,6 +200,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
+  pickupPrefabs:
+  - {fileID: 4641070487302181039, guid: bc0bd7a6c10987847a104138e54b75c7, type: 3}
+  dropChance: 1
 --- !u!136 &-5607548486960471172
 CapsuleCollider:
   m_ObjectHideFlags: 0
