@@ -206,6 +206,8 @@ MonoBehaviour:
   - {fileID: 4641070487302181039, guid: bc0bd7a6c10987847a104138e54b75c7, type: 3}
   - {fileID: 5064151100205592281, guid: d31e738fb4bcd9c45ab6be2709eb9aeb, type: 3}
   dropChance: 0.1
+  lootBoxPrefab: {fileID: 5787738899470961963, guid: f4fe7c017cddaa64a8f0fd738dde6c8e, type: 3}
+  lootDropChance: 1
 --- !u!136 &-5607548486960471172
 CapsuleCollider:
   m_ObjectHideFlags: 0

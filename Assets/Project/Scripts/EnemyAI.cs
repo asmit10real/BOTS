@@ -35,7 +35,7 @@ public class EnemyAI : NetworkBehaviour {
     private IEnumerator StartMovementAfterDelay(float delay) {
         yield return new WaitForSeconds(delay);
         canMove = true;
-        Debug.Log($"[EnemyAI] Enemy {Object.Id} is now moving move speed: {moveSpeed}");
+        //Debug.Log($"[EnemyAI] Enemy {Object.Id} is now moving move speed: {moveSpeed}");
     }
 
     // ✅ MOVE MOVEMENT TO `FixedUpdateNetwork()`
@@ -60,7 +60,7 @@ public class EnemyAI : NetworkBehaviour {
 
         // ✅ Ensure position is updated in the network
         NetworkedPosition = transform.position;
-        Debug.Log($"[EnemyAI] Enemy {Object.Id} moving towards {target.position}, New Position: {NetworkedPosition}");
+        //Debug.Log($"[EnemyAI] Enemy {Object.Id} moving towards {target.position}, New Position: {NetworkedPosition}");
     }
 
     public override void Render() {
