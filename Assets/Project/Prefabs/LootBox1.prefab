@@ -101,7 +101,7 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -124,8 +124,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8fa0aa68aea1f0459605d0db2069cc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  launchForce: 25
-  forwardForce: 7.5
+  launchForce: 35
+  forwardForce: 12
 --- !u!54 &520837479264608306
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -151,7 +151,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 80
   m_CollisionDetection: 2
 --- !u!114 &4348248771135221909
 MonoBehaviour:

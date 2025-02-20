@@ -18,7 +18,10 @@ public class LootBox : NetworkBehaviour {
             Debug.LogError($"[LootBox] Missing Rigidbody or Collider on {gameObject.name}!");
             return;
         }
-
+        // ❌ Ignore all collisions initially except Ground (so it can land properly)
+        Physics.IgnoreLayerCollision(LayerMask.NameToLayer("LootBox"), LayerMask.NameToLayer("Player"), true);
+        Physics.IgnoreLayerCollision(LayerMask.NameToLayer("LootBox"), LayerMask.NameToLayer("Enemy"), true);
+        Physics.IgnoreLayerCollision(LayerMask.NameToLayer("LootBox"), LayerMask.NameToLayer("LootBox"), true);
         boxCollider.isTrigger = false; // ✅ Ensure it's solid initially
         StartCoroutine(LaunchLootBox());
     }
@@ -43,6 +46,7 @@ public class LootBox : NetworkBehaviour {
     private void EnableCollection() {
         rb.isKinematic = true; // Stops movement
         GetComponent<Collider>().isTrigger = true; // Allows collection
+        Physics.IgnoreLayerCollision(LayerMask.NameToLayer("LootBox"), LayerMask.NameToLayer("Player"), false);
         isCollectible = true;
         Debug.Log("[LootBox] Now collectible!");
     }
