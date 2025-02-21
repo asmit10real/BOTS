@@ -20,7 +20,7 @@ public class PlayerCombat : NetworkBehaviour {
     }
 
     public override void FixedUpdateNetwork() {
-        Debug.Log("FixedUpdateNetwork is Running...");
+        //Debug.Log("FixedUpdateNetwork is Running...");
         
         if (!Object.HasInputAuthority) {
             Debug.Log("No Input Authority. Skipping attack logic.");

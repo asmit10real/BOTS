@@ -12,7 +12,7 @@ public class SectorCompleteUI : MonoBehaviour {
 
     public void ShowSectorClear() {
         sectorClearBanner.SetActive(true);
-        StartCoroutine(FadeOutText());
+        //StartCoroutine(FadeOutText());
     }
 
     private IEnumerator FadeOutText() {

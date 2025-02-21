@@ -193,7 +193,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Camera: {fileID: 0}
-  PlayerSpeed: 10
+  PlayerSpeed: 100
   JumpForce: 20
   GravityValue: -29.43
 --- !u!114 &-1971074170306995823
@@ -208,7 +208,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9f3bad251eace44e876f0c28f25ea66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRange: 2
+  attackRange: 100
   attackDamage: 50
   enemyLayer:
     serializedVersion: 2

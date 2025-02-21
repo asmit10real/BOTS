@@ -35,7 +35,7 @@ public class SectorManager : NetworkBehaviour {
     }
 
     private IEnumerator ExitToMainMenu() {
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(7.5f);
 
         Debug.Log("[SectorManager] Returning to main menu...");
         Runner.Shutdown();
