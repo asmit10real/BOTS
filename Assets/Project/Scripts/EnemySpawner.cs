@@ -7,10 +7,12 @@ public class EnemySpawner : NetworkBehaviour {
     public List<NetworkPrefabRef> enemyPrefabs; // Enemy types
     public List<int> keyEnemyIndexes; // ✅ List of key enemy indexes
     public InvisibleGate linkedGate; // ✅ The gate this spawner controls
+    public bool isBossSpawner = false; // Mark this in Inspector for the Boss
     private Dictionary<NetworkObject, bool> spawnedEnemies = new Dictionary<NetworkObject, bool>();
 
     private bool shouldSpawn = false;
     private bool hasSpawned = false; // ✅ New safeguard variable
+    public SectorManager sectorManager;
 
 
     public void ActivateSpawner() {
@@ -70,6 +72,11 @@ public class EnemySpawner : NetworkBehaviour {
                 Debug.Log($"[EnemySpawner] All key enemies defeated. Opening gate.");
                 linkedGate?.OpenGate();
             }
+        }
+
+        if (isBossSpawner) {
+            Debug.Log("Boss is dead!");
+            sectorManager.NotifyBossDeath();
         }
     }
 
