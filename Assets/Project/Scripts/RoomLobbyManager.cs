@@ -17,7 +17,9 @@ public class RoomLobbyManager : NetworkBehaviour
     [SerializeField] private TMP_InputField chatInput;
 
     [Networked] private int selectedMap { get; set; } // Syncs map selection
-    [Networked] private NetworkDictionary<PlayerRef, bool> playerReadyStatus { get; } = default;
+    [Networked, Capacity(8)] private NetworkDictionary<PlayerRef, bool> playerReadyStatus => default;
+
+
 
     private NetworkRunner runner;
 
@@ -39,8 +41,9 @@ public class RoomLobbyManager : NetworkBehaviour
             mapDropdown.interactable = false;
         }
 
-        UpdatePlayerSlots();
     }
+
+    
 
     public override void FixedUpdateNetwork()
     {
@@ -52,7 +55,6 @@ public class RoomLobbyManager : NetworkBehaviour
         Debug.Log($"Updating player slots {runner.ActivePlayers}");
         var players = runner.ActivePlayers.ToList(); // Convert to List for indexing
         Debug.Log(players);
-        Debug.Log(players[0]);
         for (int i = 0; i < playerSlots.Count; i++)
         {
             if (i < players.Count)
@@ -77,8 +79,11 @@ public class RoomLobbyManager : NetworkBehaviour
 
     public void OnReadyClicked()
     {
-        Debug.Log($"Ready is clicked {runner.LocalPlayer}");
-        playerReadyStatus.Set(runner.LocalPlayer, !playerReadyStatus.Get(runner.LocalPlayer));
+        bool isReady = false;
+        if (playerReadyStatus.TryGet(runner.LocalPlayer, out bool currentStatus)) {
+            isReady = !currentStatus; // Toggle ready state
+        }
+        playerReadyStatus.Set(runner.LocalPlayer, isReady);
         UpdatePlayerSlots();
 
         // If all players are ready, start the game
@@ -118,7 +123,7 @@ public class RoomLobbyManager : NetworkBehaviour
         Debug.Log("Checking if all players ready");
         foreach (var player in runner.ActivePlayers)
         {
-            if (!playerReadyStatus.ContainsKey(player) || !playerReadyStatus[player])
+            if (!playerReadyStatus.TryGet(player, out bool isReady) || !isReady)
             {
                 Debug.Log("Players not ready");
                 return false;
