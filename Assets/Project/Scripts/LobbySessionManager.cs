@@ -8,32 +8,14 @@ public class LobbySessionManager : NetworkBehaviour, IPlayerJoined
     [Networked, Capacity(8)] 
     private NetworkDictionary<PlayerRef, NetworkBool> playerReadyStatus => default;
 
+    public delegate void PlayerListUpdated();
+    public event PlayerListUpdated OnPlayerListUpdated; // 🔹 UI can listen for updates
+
     public override void Spawned()
     {
         Debug.Log("[LobbySessionManager] Spawned and tracking players.");
+        UpdatePlayerList();
     }
-
-    public override void FixedUpdateNetwork()
-    {
-        if (!Object.HasStateAuthority) return;
-
-        //Debug.Log($"[New debug: LobbySessionManager] Active Players: {Runner.ActivePlayers.Count()}");
-        
-        foreach (var player in Runner.ActivePlayers)
-        {
-            //Debug.Log($"[New debug: LobbySessionManager] Checking Player: {player}");
-
-            if (Runner.TryGetPlayerObject(player, out NetworkObject playerObject))
-            {
-                //Debug.Log($"[New debug: LobbySessionManager] Found player object for {player}: {playerObject.name}, HasInputAuthority: {playerObject.HasInputAuthority}");
-            }
-            else
-            {
-                //Debug.Log($"[New debug: LobbySessionManager No PlayerObject found for {player}");
-            }
-        }
-    }
-
 
     public void PlayerJoined(PlayerRef player)
     {
@@ -44,7 +26,20 @@ public class LobbySessionManager : NetworkBehaviour, IPlayerJoined
             playerReadyStatus.Set(player, false); // Default to not ready
         }
 
-        Debug.Log($"[LobbySessionManager] Current Active Players: {Runner.ActivePlayers.Count()}");
+        // 🔹 Ensure RoomLobbyManager updates UI when a player joins
+        var roomLobbyManager = FindFirstObjectByType<RoomLobbyManager>();
+        if (roomLobbyManager != null)
+        {
+            roomLobbyManager.UpdatePlayerSlots();
+        }
+
+        UpdatePlayerList();
+    }
+
+    private void UpdatePlayerList()
+    {
+        Debug.Log($"[LobbySessionManager] Updating Player List. Active Players: {Runner.ActivePlayers.Count()}");
+        OnPlayerListUpdated?.Invoke(); // 🔹 Notify `RoomLobbyManager`
     }
 
     public void ToggleReady(PlayerRef player)
@@ -59,6 +54,7 @@ public class LobbySessionManager : NetworkBehaviour, IPlayerJoined
         }
 
         Debug.Log($"[LobbySessionManager] Player {player} ready state is now {playerReadyStatus[player]}");
+        OnPlayerListUpdated?.Invoke(); // 🔹 Notify `RoomLobbyManager`
     }
 
     public bool AllPlayersReady()
