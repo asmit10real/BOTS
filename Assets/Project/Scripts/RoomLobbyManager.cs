@@ -15,6 +15,8 @@ public class RoomLobbyManager : MonoBehaviour
     [SerializeField] private ScrollRect chatScrollRect;
     [SerializeField] private TMP_Text chatContent;
     [SerializeField] private TMP_InputField chatInput;
+    // ✅ NEW: Static list to store players during transition
+    public static List<PlayerRef> PlayersBeforeTransition = new List<PlayerRef>();
 
     private LobbySessionManager sessionManager;
 
@@ -70,7 +72,7 @@ public class RoomLobbyManager : MonoBehaviour
         
         UpdatePlayerSlots();
 
-        if (sessionManager.Runner.IsServer && sessionManager.AllPlayersReady())
+        if (sessionManager.AllPlayersReady())
         {
             Debug.Log("[RoomLobbyManager] All players ready! Starting game...");
             StartGame();
@@ -108,6 +110,9 @@ public class RoomLobbyManager : MonoBehaviour
     {
         if (sessionManager.Runner.IsSceneAuthority)
         {
+            PlayersBeforeTransition = sessionManager.Runner.ActivePlayers.ToList();
+            Debug.Log($"[LobbySessionManager] Saving {PlayersBeforeTransition.Count} players before transition.");
+
             int sceneBuildIndex = SceneUtility.GetBuildIndexByScenePath("Assets/Project/Scenes/Sector1.unity");
 
             if (sceneBuildIndex >= 0)

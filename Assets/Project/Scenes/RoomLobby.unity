@@ -2425,8 +2425,7 @@ MonoBehaviour:
   ObjectInterest: 1
   Flags: 786433
   NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 885862171}
+  NetworkedBehaviours: []
   ForceRemoteRenderTimeframe: 0
 --- !u!4 &885862170
 Transform:
@@ -2470,7 +2469,6 @@ MonoBehaviour:
   chatScrollRect: {fileID: 1560043665}
   chatContent: {fileID: 1455272061}
   chatInput: {fileID: 895347903}
-  lobbyPlayerPrefab: {fileID: 2719328190826081950, guid: 1d3cc612fc9a7a74fa39db0fae2effd9, type: 3}
 --- !u!1 &895347901
 GameObject:
   m_ObjectHideFlags: 0
