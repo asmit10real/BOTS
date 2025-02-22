@@ -17,15 +17,19 @@ public class RoomLobbyManager : NetworkBehaviour
     [SerializeField] private TMP_InputField chatInput;
 
     [Networked] private int selectedMap { get; set; } // Syncs map selection
-    [Networked, Capacity(8)] private NetworkDictionary<PlayerRef, bool> playerReadyStatus => default;
 
+    [Networked, Capacity(8)] 
+    private NetworkDictionary<PlayerRef, NetworkBool> playerReadyStatus => default;
+    [SerializeField] private NetworkObject lobbyPlayerPrefab; // ✅ Assign this in Inspector!
 
 
     private NetworkRunner runner;
+    private LobbySessionManager sessionManager;
 
     private void Start()
     {
         runner = FindFirstObjectByType<NetworkRunner>();
+        sessionManager = FindFirstObjectByType<LobbySessionManager>();
 
         readyButton.onClick.AddListener(OnReadyClicked);
         exitButton.onClick.AddListener(OnExitClicked);
@@ -41,9 +45,8 @@ public class RoomLobbyManager : NetworkBehaviour
             mapDropdown.interactable = false;
         }
 
+        UpdatePlayerSlots();
     }
-
-    
 
     public override void FixedUpdateNetwork()
     {
@@ -51,49 +54,69 @@ public class RoomLobbyManager : NetworkBehaviour
         UpdatePlayerSlots();
     }
 
-    private void UpdatePlayerSlots(){
-        Debug.Log($"Updating player slots {runner.ActivePlayers}");
-        var players = runner.ActivePlayers.ToList(); // Convert to List for indexing
-        Debug.Log(players);
+    private void UpdatePlayerSlots()
+    {
+        var players = runner.ActivePlayers.ToList();
+
         for (int i = 0; i < playerSlots.Count; i++)
         {
             if (i < players.Count)
             {
-                Debug.Log("Checking if player is ready");
                 var player = players[i];
                 playerSlots[i].SetActive(true);
                 var textComponent = playerSlots[i].GetComponentInChildren<TMP_Text>();
 
-                bool isReady = playerReadyStatus.ContainsKey(player) ? playerReadyStatus.Get(player) : false;
+                bool isReady = sessionManager != null && sessionManager.AllPlayersReady();
                 textComponent.text = player.ToString() + (isReady ? " (READY)" : "");
-                Debug.Log("Attempted to change ready status");
             }
             else
             {
-                Debug.Log($"Setting {playerSlots[i]} to false");
                 playerSlots[i].SetActive(false);
             }
         }
     }
 
-
     public void OnReadyClicked()
     {
-        bool isReady = false;
-        if (playerReadyStatus.TryGet(runner.LocalPlayer, out bool currentStatus)) {
-            isReady = !currentStatus; // Toggle ready state
+        Debug.Log("[RoomLobbyManager] Ready button clicked.");
+
+        PlayerRef localPlayer = PlayerRef.None;
+
+        foreach (var player in runner.ActivePlayers)
+        {
+            if (runner.TryGetPlayerObject(player, out NetworkObject playerObject) && playerObject.HasInputAuthority)
+            {
+                localPlayer = player;
+                break;
+            }
         }
-        playerReadyStatus.Set(runner.LocalPlayer, isReady);
+
+        if (localPlayer == PlayerRef.None)
+        {
+            Debug.LogError("[RoomLobbyManager] ERROR: Unable to determine local player! No valid PlayerRef found.");
+            return;
+        }
+
+        Debug.Log($"[RoomLobbyManager] Ready clicked by {localPlayer}");
+
+        if (playerReadyStatus.TryGet(localPlayer, out NetworkBool isReady))
+        {
+            playerReadyStatus.Set(localPlayer, !isReady);
+        }
+        else
+        {
+            playerReadyStatus.Set(localPlayer, true);
+        }
+
         UpdatePlayerSlots();
 
-        // If all players are ready, start the game
-        if (runner.IsServer && AllPlayersReady())
+        if (runner.IsServer && sessionManager.AllPlayersReady())
         {
-            Debug.Log("Starting game");
+            Debug.Log("[RoomLobbyManager] All players ready! Starting game...");
             StartGame();
         }
-        
     }
+
 
     private void OnExitClicked()
     {
@@ -118,21 +141,6 @@ public class RoomLobbyManager : NetworkBehaviour
         }
     }
 
-    private bool AllPlayersReady()
-    {
-        Debug.Log("Checking if all players ready");
-        foreach (var player in runner.ActivePlayers)
-        {
-            if (!playerReadyStatus.TryGet(player, out bool isReady) || !isReady)
-            {
-                Debug.Log("Players not ready");
-                return false;
-            }
-        }
-        Debug.Log("Players ready");
-        return true;
-    }
-
     [Rpc(RpcSources.All, RpcTargets.All)]
     private void RPC_SendChatMessage(string message, PlayerRef sender)
     {
@@ -143,7 +151,7 @@ public class RoomLobbyManager : NetworkBehaviour
 
     private void StartGame()
     {
-        if (runner.IsSceneAuthority) // Only the server should load the scene
+        if (runner.IsSceneAuthority)
         {
             int sceneBuildIndex = SceneUtility.GetBuildIndexByScenePath("Assets/Project/Scenes/Sector1.unity");
 
@@ -158,5 +166,4 @@ public class RoomLobbyManager : NetworkBehaviour
             }
         }
     }
-
 }
