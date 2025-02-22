@@ -2455,6 +2455,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerSlots:
+  - {fileID: 1849855340}
   - {fileID: 1898207524}
   - {fileID: 2139235355}
   - {fileID: 1272436531}
@@ -2462,7 +2463,6 @@ MonoBehaviour:
   - {fileID: 1901063431}
   - {fileID: 1828869777}
   - {fileID: 1748618259}
-  - {fileID: 1849855340}
   readyButton: {fileID: 1093668608}
   exitButton: {fileID: 144555377}
   mapDropdown: {fileID: 484234304}
@@ -4226,7 +4226,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 366351300}
   m_HandleRect: {fileID: 366351299}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -6867,6 +6867,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerPrefab: {fileID: 8336672236545593049, guid: 1d3cc612fc9a7a74fa39db0fae2effd9, type: 3}
+  roomLobbyManager: {fileID: 885862171}
 --- !u!1 &1849855340
 GameObject:
   m_ObjectHideFlags: 0

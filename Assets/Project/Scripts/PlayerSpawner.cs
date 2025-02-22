@@ -4,10 +4,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SocialPlatforms;
 
-public class PlayerSpawner : SimulationBehaviour, IPlayerJoined
+public class PlayerSpawner : SimulationBehaviour
 {
     public GameObject PlayerPrefab;
-
+    public Transform[] SectorSpawnPoints; // Assign these in the Inspector
+/*
     public void PlayerJoined(PlayerRef player)
     {
         Debug.Log($"[PlayerSpawner] OnPlayerJoined called for {player}");
@@ -18,53 +19,46 @@ public class PlayerSpawner : SimulationBehaviour, IPlayerJoined
             Runner.Spawn(PlayerPrefab, new Vector3(0, 1, 0), Quaternion.identity, player);
         }
     }
-
-    // ✅ NEW: Force player spawn after scene transition
+*/
     private void Start()
     {
-        StartCoroutine(EnsureRunnerBeforeSpawning());
+        StartCoroutine(RepositionPlayersAfterSceneLoad());
     }
 
-    private void SpawnExistingPlayers()
+    private IEnumerator RepositionPlayersAfterSceneLoad()
     {
-        Debug.Log($"[PlayerSpawner] Attempting to spawn players...");
-
-        if (RoomLobbyManager.PlayersBeforeTransition == null || RoomLobbyManager.PlayersBeforeTransition.Count == 0)
-        {
-            Debug.LogError("[PlayerSpawner] ERROR: No players found to spawn!");
-            return;
-        }
-
-        foreach (var player in RoomLobbyManager.PlayersBeforeTransition)
-        {
-            Debug.Log($"[PlayerSpawner] Spawning player: {player}");
-
-            if (Runner != null)
-            {
-                Runner.Spawn(PlayerPrefab, new Vector3(0, 1, 0), Quaternion.identity, player);
-            }
-            else
-            {
-                Debug.LogError("[PlayerSpawner] ERROR: Runner is null when trying to spawn players!");
-            }
-        }
-    }
-
-    private IEnumerator EnsureRunnerBeforeSpawning()
-    {
-        Debug.Log("[PlayerSpawner] Waiting for NetworkRunner to initialize...");
-
-        // ✅ Wait until Runner is assigned
-        while (Runner == null)
-        {
-            yield return null;
-        }
-
-        Debug.Log("[PlayerSpawner] NetworkRunner detected! Waiting for players...");
-
-        // ✅ Ensure Fusion has stabilized after scene load
         yield return new WaitForSeconds(1.5f);
 
-        SpawnExistingPlayers();
+        foreach (var player in Runner.ActivePlayers)
+        {
+            if (Runner.TryGetPlayerObject(player, out NetworkObject playerObject))
+            {
+                Debug.Log($"[PlayerSpawner] Moving {player} to sector start position.");
+
+                // Move the player to the correct spawn point
+                int spawnIndex = player.RawEncoded % SectorSpawnPoints.Length;
+                playerObject.transform.position = SectorSpawnPoints[spawnIndex].position;
+
+                // ✅ Re-enable movement, combat, and health
+                EnablePlayerScripts(playerObject);
+
+                // Re-enable physics/movement
+                var rigidbody = playerObject.GetComponent<Rigidbody>();
+                if (rigidbody) rigidbody.isKinematic = false; 
+            }
+        }
+    }
+
+    private void EnablePlayerScripts(NetworkObject playerObject)
+    {
+        var playerController = playerObject.GetComponent<PlayerController>();
+        var playerCombat = playerObject.GetComponent<PlayerCombat>();
+        var playerHealth = playerObject.GetComponent<PlayerHealth>();
+
+        if (playerController) playerController.enabled = true;
+        if (playerCombat) playerCombat.enabled = true;
+        if (playerHealth) playerHealth.enabled = true;
+
+        Debug.Log($"[PlayerSpawner] Re-enabled movement, combat, and health scripts for {playerObject.name} in game scene.");
     }
 }

@@ -8,7 +8,7 @@ using System.Linq;
 
 public class RoomLobbyManager : MonoBehaviour
 {
-    [SerializeField] private List<GameObject> playerSlots;
+    [SerializeField] public List<GameObject> playerSlots;
     [SerializeField] private Button readyButton;
     [SerializeField] private Button exitButton;
     [SerializeField] private TMP_Dropdown mapDropdown;
@@ -58,7 +58,7 @@ public class RoomLobbyManager : MonoBehaviour
             }
             else
             {
-                playerSlots[i].SetActive(false);
+                //playerSlots[i].SetActive(false);
             }
         }
     }
@@ -126,4 +126,6 @@ public class RoomLobbyManager : MonoBehaviour
             }
         }
     }
+
+    
 }
