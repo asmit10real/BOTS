@@ -2401,7 +2401,6 @@ GameObject:
   m_Component:
   - component: {fileID: 885862170}
   - component: {fileID: 885862168}
-  - component: {fileID: 885862171}
   m_Layer: 0
   m_Name: RoomLobbyManager
   m_TagString: Untagged
@@ -2442,33 +2441,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &885862171
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 885862167}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c655d799172bc9418443a727bef1685, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerSlots:
-  - {fileID: 1849855340}
-  - {fileID: 1898207524}
-  - {fileID: 2139235355}
-  - {fileID: 1272436531}
-  - {fileID: 357269515}
-  - {fileID: 1901063431}
-  - {fileID: 1828869777}
-  - {fileID: 1748618259}
-  readyButton: {fileID: 1093668608}
-  exitButton: {fileID: 144555377}
-  mapDropdown: {fileID: 484234304}
-  chatScrollRect: {fileID: 1560043665}
-  chatContent: {fileID: 1455272061}
-  chatInput: {fileID: 895347903}
 --- !u!1 &895347901
 GameObject:
   m_ObjectHideFlags: 0
@@ -4226,7 +4198,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 366351300}
   m_HandleRect: {fileID: 366351299}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -6751,6 +6723,8 @@ GameObject:
   - component: {fileID: 1843393205}
   - component: {fileID: 1843393204}
   - component: {fileID: 1843393207}
+  - component: {fileID: 1843393208}
+  - component: {fileID: 1843393209}
   m_Layer: 0
   m_Name: Prototype Runner
   m_TagString: Untagged
@@ -6811,7 +6785,19 @@ MonoBehaviour:
       m_Calls: []
   OnSceneLoadDone:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1843393208}
+        m_TargetAssemblyTypeName: PlayerSpawner, Assembly-CSharp
+        m_MethodName: SpawnLocalPlayerIfInSector
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnSceneLoadStart:
     m_PersistentCalls:
       m_Calls: []
@@ -6867,7 +6853,47 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerPrefab: {fileID: 8336672236545593049, guid: 1d3cc612fc9a7a74fa39db0fae2effd9, type: 3}
-  roomLobbyManager: {fileID: 885862171}
+  roomLobbyManager: {fileID: 1843393209}
+--- !u!114 &1843393208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1843393203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6915925ff529934bb6981c2294246d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerPrefab: {fileID: 8336672236545593049, guid: 1d3cc612fc9a7a74fa39db0fae2effd9, type: 3}
+--- !u!114 &1843393209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1843393203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c655d799172bc9418443a727bef1685, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerSlots:
+  - {fileID: 1849855340}
+  - {fileID: 1898207524}
+  - {fileID: 2139235355}
+  - {fileID: 1272436531}
+  - {fileID: 357269515}
+  - {fileID: 1901063431}
+  - {fileID: 1828869777}
+  - {fileID: 1748618259}
+  readyButton: {fileID: 1093668608}
+  exitButton: {fileID: 144555377}
+  mapDropdown: {fileID: 484234304}
+  chatScrollRect: {fileID: 1560043665}
+  chatContent: {fileID: 1455272061}
+  chatInput: {fileID: 895347903}
 --- !u!1 &1849855340
 GameObject:
   m_ObjectHideFlags: 0

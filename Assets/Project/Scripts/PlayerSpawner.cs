@@ -1,64 +1,65 @@
 using Fusion;
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.SocialPlatforms;
+using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class PlayerSpawner : SimulationBehaviour
 {
     public GameObject PlayerPrefab;
-    public Transform[] SectorSpawnPoints; // Assign these in the Inspector
-/*
-    public void PlayerJoined(PlayerRef player)
-    {
-        Debug.Log($"[PlayerSpawner] OnPlayerJoined called for {player}");
+    private Transform[] SectorSpawnPoints; // Dynamically assigned in each scene
 
-        if (player == Runner.LocalPlayer)
+    public void Start()
+    {
+        StartCoroutine(SpawnLocalPlayerIfInSector());
+    }
+
+    private IEnumerator SpawnLocalPlayerIfInSector()
+    {
+
+        // 🚨 Skip spawning if we are still in the lobby
+        if (SceneManager.GetActiveScene().name == "RoomLobby")
         {
-            Debug.Log($"[PlayerSpawner] Spawning player for {player} with input authority.");
-            Runner.Spawn(PlayerPrefab, new Vector3(0, 1, 0), Quaternion.identity, player);
+            Debug.Log("[PlayerSpawner] In RoomLobby, skipping player spawn.");
+            yield break;
         }
-    }
-*/
-    private void Start()
-    {
-        StartCoroutine(RepositionPlayersAfterSceneLoad());
-    }
 
-    private IEnumerator RepositionPlayersAfterSceneLoad()
-    {
-        yield return new WaitForSeconds(1.5f);
+        Debug.Log($"[PlayerSpawner] Spawning local player in {SceneManager.GetActiveScene().name}");
 
-        foreach (var player in Runner.ActivePlayers)
+        // 🔹 Find all valid spawn points
+        GameObject spawnPointParent = GameObject.Find("PlayerSpawnPoints");
+        if (spawnPointParent == null)
         {
-            if (Runner.TryGetPlayerObject(player, out NetworkObject playerObject))
-            {
-                Debug.Log($"[PlayerSpawner] Moving {player} to sector start position.");
-
-                // Move the player to the correct spawn point
-                int spawnIndex = player.RawEncoded % SectorSpawnPoints.Length;
-                playerObject.transform.position = SectorSpawnPoints[spawnIndex].position;
-
-                // ✅ Re-enable movement, combat, and health
-                EnablePlayerScripts(playerObject);
-
-                // Re-enable physics/movement
-                var rigidbody = playerObject.GetComponent<Rigidbody>();
-                if (rigidbody) rigidbody.isKinematic = false; 
-            }
+            Debug.LogError("[PlayerSpawner] ERROR: No 'PlayerSpawnPoints' object found in the scene!");
+            yield break;
         }
-    }
 
-    private void EnablePlayerScripts(NetworkObject playerObject)
-    {
-        var playerController = playerObject.GetComponent<PlayerController>();
-        var playerCombat = playerObject.GetComponent<PlayerCombat>();
-        var playerHealth = playerObject.GetComponent<PlayerHealth>();
+        SectorSpawnPoints = spawnPointParent.GetComponentsInChildren<Transform>()
+            .Where(t => t != spawnPointParent.transform) // Exclude the parent itself
+            .ToArray();
 
-        if (playerController) playerController.enabled = true;
-        if (playerCombat) playerCombat.enabled = true;
-        if (playerHealth) playerHealth.enabled = true;
+        if (SectorSpawnPoints.Length == 0)
+        {
+            Debug.LogError("[PlayerSpawner] ERROR: No valid spawn points found!");
+            yield break;
+        }
 
-        Debug.Log($"[PlayerSpawner] Re-enabled movement, combat, and health scripts for {playerObject.name} in game scene.");
+        Debug.Log($"✅ [PlayerSpawner] Found {SectorSpawnPoints.Length} spawn points.");
+
+        // 🚨 Ensure we have a valid NetworkRunner
+        if (Runner == null)
+        {
+            Debug.LogError("[PlayerSpawner] ERROR: No active NetworkRunner found! Cannot spawn player.");
+            yield break;
+        }
+
+        // 🚨 Only spawn the local player (each client will handle their own spawn)
+        int spawnIndex = Runner.LocalPlayer.RawEncoded % SectorSpawnPoints.Length;
+
+        Debug.Log($"[PlayerSpawner] Spawning LOCAL player {Runner.LocalPlayer} at spawn point {spawnIndex}...");
+
+        Runner.Spawn(PlayerPrefab, SectorSpawnPoints[spawnIndex].position, Quaternion.identity, Runner.LocalPlayer);
+
+        Debug.Log($"✅ [PlayerSpawner] Spawned LOCAL player {Runner.LocalPlayer}");
     }
 }
