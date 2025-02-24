@@ -26,7 +26,7 @@ public class PlayerSpawner : SimulationBehaviour
             return;
         }
 
-        Debug.Log($"[PlayerSpawner] Spawning local player in {SceneManager.GetActiveScene().name}");
+        //Debug.Log($"[PlayerSpawner] Spawning local player in {SceneManager.GetActiveScene().name}");
 
         // 🔹 Find all valid spawn points
         GameObject spawnPointParent = GameObject.Find("PlayerSpawnPoints");
@@ -46,7 +46,7 @@ public class PlayerSpawner : SimulationBehaviour
             return;
         }
 
-        Debug.Log($"✅ [PlayerSpawner] Found {SectorSpawnPoints.Length} spawn points.");
+        //Debug.Log($"✅ [PlayerSpawner] Found {SectorSpawnPoints.Length} spawn points.");
 
         // 🚨 Ensure we have a valid NetworkRunner
         if (Runner == null)
@@ -58,10 +58,10 @@ public class PlayerSpawner : SimulationBehaviour
         // 🚀 Assign a unique spawn point
         int spawnIndex = Runner.LocalPlayer.RawEncoded % SectorSpawnPoints.Length;
 
-        Debug.Log($"[PlayerSpawner] Spawning LOCAL player {Runner.LocalPlayer} at spawn point {spawnIndex}...");
+        //Debug.Log($"[PlayerSpawner] Spawning LOCAL player {Runner.LocalPlayer} at spawn point {spawnIndex}...");
 
         Runner.Spawn(PlayerPrefab, SectorSpawnPoints[spawnIndex].position, Quaternion.identity, Runner.LocalPlayer);
 
-        Debug.Log($"✅ [PlayerSpawner] Spawned LOCAL player {Runner.LocalPlayer}");
+        //Debug.Log($"✅ [PlayerSpawner] Spawned LOCAL player {Runner.LocalPlayer}");
     }
 }

@@ -2,78 +2,43 @@ using UnityEngine;
 using Fusion;
 
 public class PlayerCombat : NetworkBehaviour {
-    public float attackRange = 2f;
-    public int attackDamage = 25;
-    public LayerMask enemyLayer;
-    private bool attackPressed = false;
+    public GameObject AttackHitbox; // Assigned in Inspector
+    private Animator _animator;
+    private bool _isAttacking = false;
 
-    public override void Spawned() {
-        Debug.Log($"PlayerCombat Spawned. HasInputAuthority: {Object.HasInputAuthority}");
+    private void Awake() {
+        _animator = GetComponent<Animator>();
     }
 
     void Update() {
-        //Debug.Log("PlayerCombat Update Running...");
-        if (Input.GetMouseButtonDown(0)) { // Left-click to attack
-            Debug.Log("Mouse Click Detected!");
-            attackPressed = true;
+        if (!Object.HasInputAuthority) return;
+
+        if (Input.GetKeyDown(KeyCode.V) && !_isAttacking) {
+            Debug.Log("[PlayerCombat] V key pressed! Attempting to attack...");
+            _isAttacking = true;
+            RPC_PerformAttack();
         }
     }
 
-    public override void FixedUpdateNetwork() {
-        //Debug.Log("FixedUpdateNetwork is Running...");
-        
-        if (!Object.HasInputAuthority) {
-            Debug.Log("No Input Authority. Skipping attack logic.");
-            return; // Only local player should trigger attacks
-        }
-
-        if (attackPressed) {
-            attackPressed = false;
-            Debug.Log("Attack Performed!");
-            PerformAttack();
-        }
-    }
-
-
-    private void PerformAttack() {
-        if (Runner.IsServer) {
-            Debug.Log("Server executing attack...");
-            DoDamage();
-        } else {
-            Debug.Log("Client requesting attack from server...");
-            RPC_PerformAttack(); // Request attack execution from the server
-        }
-    }
-
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     private void RPC_PerformAttack() {
-        Debug.Log("Server received attack request from client.");
-        DoDamage();
+        Debug.Log("[PlayerCombat] Attack triggered on all clients!");
+        _isAttacking = true;
+        _animator.SetTrigger("Attack");
     }
 
-    private void DoDamage() {
-        Vector3 attackPosition = transform.position + transform.forward * attackRange * 0.5f;
-        Debug.Log($"Checking for enemies in attack range at position: {attackPosition}");
+    // 🎯 **Called by Animation Event when the attack should hit**
+    public void EnableHitbox() {
+        if (!Runner.IsServer) return;
 
-        Collider[] hitEnemies = Physics.OverlapSphere(attackPosition, attackRange * 0.5f, enemyLayer);
-
-        if (hitEnemies.Length > 0) {
-            Debug.Log($"Hit {hitEnemies.Length} enemies!");
-        } else {
-            Debug.Log("No enemies detected.");
-        }
-
-        foreach (Collider enemy in hitEnemies) {
-            if (enemy.TryGetComponent<EnemyHealth>(out EnemyHealth enemyHealth)) {
-                Debug.Log($"Applying {attackDamage} damage to {enemy.name}");
-                enemyHealth.TakeDamage(attackDamage);
-            }
-        }
+        Debug.Log("[PlayerCombat] Hitbox activated!");
+        AttackHitbox.SetActive(true);
     }
 
-    void OnDrawGizmosSelected() {
-        Gizmos.color = Color.red;
-        Vector3 attackPosition = transform.position + transform.forward * attackRange * 0.5f;
-        Gizmos.DrawWireSphere(attackPosition, attackRange * 0.5f);
+    // 🎯 **Called by Animation Event at the end of the attack**
+    public void DisableHitbox() {
+        Debug.Log("[PlayerCombat] Hitbox disabled!");
+        AttackHitbox.SetActive(false);
+        _isAttacking = false; // Reset attack state
     }
 }

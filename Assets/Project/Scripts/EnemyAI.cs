@@ -23,11 +23,11 @@ public class EnemyAI : NetworkBehaviour {
         netTransform = GetComponent<NetworkTransform>();
 
         if (netTransform == null) {
-            Debug.LogError($"[EnemyAI] ERROR: NetworkTransform missing on {Object.Id}");
+            //Debug.LogError($"[EnemyAI] ERROR: NetworkTransform missing on {Object.Id}");
             return;
         }
 
-        Debug.Log($"[EnemyAI] Enemy {Object.Id} spawned at {transform.position} (Synced via NetworkTransform)");
+        //Debug.Log($"[EnemyAI] Enemy {Object.Id} spawned at {transform.position} (Synced via NetworkTransform)");
 
         StartCoroutine(StartMovementAfterDelay(3f));
     }
@@ -66,7 +66,7 @@ public class EnemyAI : NetworkBehaviour {
     public override void Render() {
         if (!Object.HasStateAuthority) {
             transform.position = Vector3.Lerp(transform.position, NetworkedPosition, 0.1f);
-            Debug.Log($"[EnemyAI] Enemy {Object.Id} rendering at {transform.position}");
+            //Debug.Log($"[EnemyAI] Enemy {Object.Id} rendering at {transform.position}");
         }
     }
 
@@ -74,7 +74,7 @@ public class EnemyAI : NetworkBehaviour {
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
 
         if (players.Length == 0) {
-            Debug.Log($"[EnemyAI] No players found! Retrying in 1 second...");
+            //Debug.Log($"[EnemyAI] No players found! Retrying in 1 second...");
             Invoke(nameof(FindClosestPlayer), 1f);
             return;
         }

@@ -121,6 +121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e43030ac1c3c28488b60cc03988e484, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  basicAttackDamage: 300
 --- !u!1 &5321068621322925142
 GameObject:
   m_ObjectHideFlags: 0
@@ -427,7 +428,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Camera: {fileID: 0}
-  PlayerSpeed: 100
+  PlayerSpeed: 10
+  RunningSpeed: 70
   JumpForce: 20
   GravityValue: -29.43
   AttackHitbox: {fileID: 2991671223878030368}
@@ -438,16 +440,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8336672236545593049}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f9f3bad251eace44e876f0c28f25ea66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRange: 100
-  attackDamage: 50
-  enemyLayer:
-    serializedVersion: 2
-    m_Bits: 64
+  AttackHitbox: {fileID: 2991671223878030368}
 --- !u!114 &7265035167750133016
 MonoBehaviour:
   m_ObjectHideFlags: 0
