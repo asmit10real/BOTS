@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fb9b73d23f6f554b9e61751041bb224, type: 3}
   m_Name: Arms_Armor 1
   m_EditorClassIdentifier: 
-  itemName: 
+  itemName: RARE THINGY
   itemIcon: {fileID: 0}
   itemType: 2
-  value: 100
-  attackPower: 5
+  isEquippable: 1
+  statTypes: 
+  statValues: 

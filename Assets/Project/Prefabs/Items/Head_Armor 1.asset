@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fb9b73d23f6f554b9e61751041bb224, type: 3}
   m_Name: Head_Armor 1
   m_EditorClassIdentifier: 
-  itemName: 
+  itemName: ULTRA AWESOME
   itemIcon: {fileID: 0}
   itemType: 0
-  value: 1
-  attackPower: 55
+  isEquippable: 1
+  statTypes: 0000000003000000
+  statValues: 0a00000064000000

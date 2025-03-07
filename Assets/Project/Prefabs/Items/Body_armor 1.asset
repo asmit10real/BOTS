@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fb9b73d23f6f554b9e61751041bb224, type: 3}
   m_Name: Body_armor 1
   m_EditorClassIdentifier: 
-  itemName: 
+  itemName: common thing :(
   itemIcon: {fileID: 0}
   itemType: 1
-  value: 10
-  attackPower: 2
+  isEquippable: 1
+  statTypes: 
+  statValues: 

@@ -9,8 +9,9 @@ public class LootBox : NetworkBehaviour {
     private Rigidbody rb;
     private bool hasLanded = false; // ✅ Delay velocity checks
     private Collider boxCollider;
-    public ItemData[] possibleDrops; // Assigned in Inspector
-    public float[] dropChances; // Same length as possibleDrops
+    
+    public ItemData[] possibleDrops; // ✅ Assigned in Inspector
+    public float[] dropChances; // ✅ Same length as possibleDrops
 
     public override void Spawned() {
         rb = GetComponent<Rigidbody>();
@@ -20,11 +21,13 @@ public class LootBox : NetworkBehaviour {
             Debug.LogError($"[LootBox] Missing Rigidbody or Collider on {gameObject.name}!");
             return;
         }
+
         // ❌ Ignore all collisions initially except Ground (so it can land properly)
         Physics.IgnoreLayerCollision(LayerMask.NameToLayer("LootBox"), LayerMask.NameToLayer("Player"), true);
         Physics.IgnoreLayerCollision(LayerMask.NameToLayer("LootBox"), LayerMask.NameToLayer("Enemy"), true);
         Physics.IgnoreLayerCollision(LayerMask.NameToLayer("LootBox"), LayerMask.NameToLayer("LootBox"), true);
         boxCollider.isTrigger = false; // ✅ Ensure it's solid initially
+
         StartCoroutine(LaunchLootBox());
     }
 
@@ -37,9 +40,7 @@ public class LootBox : NetworkBehaviour {
     }
 
     private void OnCollisionEnter(Collision collision) {
-        Debug.Log($"[LootBox] Collision detected with {collision.gameObject.name}, Layer: {collision.gameObject.layer}");
         if (!hasLanded && collision.gameObject.CompareTag("Ground")) { // ✅ Only detect ground impact
-            Debug.Log("Collision detected");
             hasLanded = true; // ✅ Mark as landed
             EnableCollection();
         }
@@ -57,20 +58,29 @@ public class LootBox : NetworkBehaviour {
         if (!isCollectible || !Object.HasStateAuthority) return;
 
         if (other.CompareTag("Player")) {
-            OpenBox();
+            PlayerController player = other.GetComponent<PlayerController>();
+            if (player != null) {
+                GiveItemToPlayer(player);
+            }
             Runner.Despawn(Object);
         }
     }
 
-    
-
-    public void OpenBox() {
+    private void GiveItemToPlayer(PlayerController player) {
         int chosenIndex = GetRandomDropIndex();
         if (chosenIndex != -1) {
             ItemData droppedItem = possibleDrops[chosenIndex];
-            GiveItemToPlayer(droppedItem);
+
+            InventoryManager inventory = player.GetComponent<InventoryManager>();
+            if (inventory != null) {
+                bool success = inventory.AddItem(droppedItem);
+                if (success) {
+                    Debug.Log($"[LootBox] {droppedItem.itemName} added to {player.name}'s inventory.");
+                } else {
+                    Debug.Log("[LootBox] Inventory full! Item was not added.");
+                }
+            }
         }
-        Destroy(gameObject);
     }
 
     private int GetRandomDropIndex() {
@@ -83,11 +93,7 @@ public class LootBox : NetworkBehaviour {
             currentChance += dropChances[i];
             if (randomValue <= currentChance) return i;
         }
-        Debug.LogError("SHOULD NEVER HAPPEN LOOTBOX.CS");
+        Debug.LogError("[LootBox] ERROR: Loot roll failed!");
         return -1; // Should never happen
-    }
-
-    private void GiveItemToPlayer(ItemData item) {
-        InventoryManager.Instance.AddItem(item);
     }
 }

@@ -2,37 +2,48 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class InventoryManager : MonoBehaviour {
-    public static InventoryManager Instance;
-
-    public int maxInventorySize = 10; // Default inventory size
-    private List<ItemData> inventory = new List<ItemData>();
-
-    private void Awake() {
-        if (Instance == null) {
-            Instance = this;
-        } else {
-            Destroy(gameObject);
-        }
-    }
+    public List<ItemData> inventory = new List<ItemData>();
 
     public bool AddItem(ItemData item) {
-        if (inventory.Count >= maxInventorySize) {
-            Debug.Log("Inventory Full! Cannot add item.");
+        if (inventory.Count >= 10) {
+            Debug.Log("Inventory Full!");
             return false;
         }
         inventory.Add(item);
-        Debug.Log($"Added {item.itemName} to inventory!");
+        Debug.Log($"Added {item.itemName} to inventory.");
         return true;
     }
 
-    public void RemoveItem(ItemData item) {
-        if (inventory.Contains(item)) {
-            inventory.Remove(item);
-            Debug.Log($"Removed {item.itemName} from inventory.");
+    public void EquipItem(int index, PlayerStats playerStats) {
+        if (index < 0 || index >= inventory.Count) return;
+
+        ItemData item = inventory[index];
+
+        if (!item.isEquippable) {
+            Debug.Log($"{item.itemName} cannot be equipped!");
+            return;
+        }
+
+        item.Equip(playerStats);
+
+        // ✅ Display all stat changes in the log
+        foreach (var stat in item.GetStatModifiers()) {
+            Debug.Log($"Equipped {item.itemName}, adding {stat.Value} to {stat.Key}");
         }
     }
 
-    public List<ItemData> GetInventoryItems() {
-        return inventory;
+    public void UnequipItem(int index, PlayerStats playerStats) {
+        if (index < 0 || index >= inventory.Count) return;
+
+        ItemData item = inventory[index];
+
+        if (!item.isEquippable) return;
+
+        item.Unequip(playerStats);
+
+        // ✅ Display all stat changes in the log
+        foreach (var stat in item.GetStatModifiers()) {
+            Debug.Log($"Unequipped {item.itemName}, removing {stat.Value} from {stat.Key}");
+        }
     }
 }
