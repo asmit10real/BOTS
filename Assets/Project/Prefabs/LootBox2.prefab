@@ -126,6 +126,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   launchForce: 35
   forwardForce: 12
+  possibleDrops:
+  - {fileID: 11400000, guid: ae107f046b3ab66449187901441a0f50, type: 2}
+  - {fileID: 11400000, guid: 4da593abf61562b48a90bad6addc172a, type: 2}
+  dropChances:
+  - 1
+  - 1
 --- !u!54 &520837479264608306
 Rigidbody:
   m_ObjectHideFlags: 0

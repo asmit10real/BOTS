@@ -9,6 +9,8 @@ public class LootBox : NetworkBehaviour {
     private Rigidbody rb;
     private bool hasLanded = false; // ✅ Delay velocity checks
     private Collider boxCollider;
+    public ItemData[] possibleDrops; // Assigned in Inspector
+    public float[] dropChances; // Same length as possibleDrops
 
     public override void Spawned() {
         rb = GetComponent<Rigidbody>();
@@ -55,8 +57,37 @@ public class LootBox : NetworkBehaviour {
         if (!isCollectible || !Object.HasStateAuthority) return;
 
         if (other.CompareTag("Player")) {
-            Debug.Log($"[LootBox] {other.name} collected loot!");
+            OpenBox();
             Runner.Despawn(Object);
         }
+    }
+
+    
+
+    public void OpenBox() {
+        int chosenIndex = GetRandomDropIndex();
+        if (chosenIndex != -1) {
+            ItemData droppedItem = possibleDrops[chosenIndex];
+            GiveItemToPlayer(droppedItem);
+        }
+        Destroy(gameObject);
+    }
+
+    private int GetRandomDropIndex() {
+        float totalChance = 0;
+        foreach (float chance in dropChances) totalChance += chance;
+        float randomValue = Random.Range(0, totalChance);
+        
+        float currentChance = 0;
+        for (int i = 0; i < dropChances.Length; i++) {
+            currentChance += dropChances[i];
+            if (randomValue <= currentChance) return i;
+        }
+        Debug.LogError("SHOULD NEVER HAPPEN LOOTBOX.CS");
+        return -1; // Should never happen
+    }
+
+    private void GiveItemToPlayer(ItemData item) {
+        InventoryManager.Instance.AddItem(item);
     }
 }
